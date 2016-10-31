@@ -61,6 +61,82 @@ var Agent = {
    },
 
    /**
+    * The random strategy. Chooses a bandit index from a uniform distribution.
+    */
+   Random: function() {
+      var range = 0;
+
+      return {
+         name: "Random",
+         init: function(num_bandits) { range = num_bandits; },
+         predict: function() { 
+            var p = Math.floor(Math.random() * range);
+            this.predictions.push(p);
+            return p;
+         },
+         update: function(reward) { this.rewards.push(reward) },
+         rewards: [],
+         predictions: []
+      }
+   },
+
+   /**
+    * An implementation of the Epsilon Greedy algorithm, with a fixed epsilon.
+    */
+   EpsilonGreedy: function(esp) {
+      var k = 0;
+      var epsilon = esp || 0.1;
+      var played = [];
+      var totals = [];
+      var last = 0;
+
+      function score(i) {
+         if (played[i] == 0) {
+           return 1.0;
+         } else {
+           var xbar = totals[i] / played[i];
+           return xbar;
+         }
+      }
+
+      return {
+         name: "EpsilonGreedy",
+         init: function(num_bandits) { 
+          k = num_bandits; 
+          for(var i=0 ; i < k ; i++) { 
+            totals[i] = 0; 
+            played[i] = 0;
+          }
+         },
+         predict: function() {
+            var p = 0;
+            var steps = this.predictions.length;
+
+            if (Math.random() < epsilon) {
+              // random choice
+              p = Math.floor(Math.random() * k);
+            } else {
+              // the largest empiriecal mean.
+              for(var i=0 ; i<k ; i++) {
+                if(score(i) > score(p)) p = i;
+              }
+              played[p] += 1;
+            }
+
+            this.predictions.push(p);
+            last = p;
+            return p;
+         },
+         update: function(reward) {
+            this.rewards.push(reward);
+            totals[last] += reward;
+         },
+         rewards: [],
+         predictions: []
+      }
+   },
+
+   /**
     * An implementation of the UCB1 algorithm from:
     *    P. Auer, N. Cesa-Bianchi, and P. Fischer. 
     *    "Finite-time Analysis of the Multiarmed Bandit Problem." 
@@ -74,7 +150,8 @@ var Agent = {
 
       function score(i,steps) {
          var xbar = totals[i]/played[i];
-         var bound = Math.sqrt((2*Math.log(sum(played)))/played[i]);
+         // The previous constant is 2. Here we use a better choice 1.5.
+         var bound = Math.sqrt((1.5*Math.log(sum(played)))/played[i]);
 
          return xbar + bound;
       }
@@ -233,26 +310,6 @@ var Agent = {
             return this.predictions[this.t()-1];
          },
          epochs: function() { return epochs; },
-         rewards: [],
-         predictions: []
-      }
-   },
-
-   /**
-    * The random strategy. Chooses a bandit index from a uniform distribution.
-    */
-   Random: function() {
-      var range = 0;
-
-      return {
-         name: "Random",
-         init: function(num_bandits) { range = num_bandits; },
-         predict: function() { 
-            var p = Math.floor(Math.random() * range);
-            this.predictions.push(p);
-            return p;
-         },
-         update: function(reward) { this.rewards.push(reward) },
          rewards: [],
          predictions: []
       }

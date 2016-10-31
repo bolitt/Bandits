@@ -55,7 +55,9 @@ var banditTypes = {
 var agentTypes = {
     name: 'agent',
     types: {
+        "Constant": { constructor: Agent.Constant, args: [1] },
         "Random": { constructor: Agent.Random },
+        "EpsilonGreedy": { constructor: Agent.EpsilonGreedy, args: [0.1] },
         "UCB1": { constructor: Agent.UCB1 },
         "Exp3": { constructor: Agent.Exp3, args: [0.1] },
         "Exp3.1": { constructor: Agent.Exp31 },
