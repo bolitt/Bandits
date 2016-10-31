@@ -1,5 +1,13 @@
 Bandits
 =======
+This is a forked code lib with a few improvement:
+
+  1. Improved the constant of UCB.
+  2. Implement Epsilon Greedy algorithm.
+
+_Tian Lin <bolitt@gmail.com> -- Modified: 2016-10-31_
+
+Original author:
 _Mark Reid <mark.reid@gmail.com> -- Created: 2010-04-05_
 
 This is a JavaScript/jQuery/Flot hack to demonstrate a few key algorithms in the
