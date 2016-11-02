@@ -45,7 +45,7 @@ var Agent = {
     * Always chooses bandit with index `i`.
     */
    Constant: function(i) {
-      var index = i;
+      var index = i-1;
 
       return {
          name: 'Constant('+i+')',
