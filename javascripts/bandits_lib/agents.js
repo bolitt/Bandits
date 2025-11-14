@@ -313,6 +313,54 @@ var Agent = {
          rewards: [],
          predictions: []
       }
+   },
+
+   // Thompson Sampling for Bernoulli Bandits
+   ThompsonSampling: function() {
+      var k = 0;
+      var successes = [];
+      var failures = [];
+
+      return {
+         name: "ThompsonSampling",
+         init: function(num_bandits) { 
+            k = num_bandits; 
+            for(var i=0 ; i < k ; i++) { 
+              successes[i] = 0; 
+              failures[i] = 0;
+            }
+         },
+         predict: function() {
+            var chosen = 0;
+            var maxSample = -1;
+
+            for(var i=0 ; i<k ; i++) {
+              var sample = jStat.beta.sample(successes[i]+1,failures[i]+1);
+              if(sample > maxSample) {
+                maxSample = sample;
+                chosen = i;
+              }
+            }
+            this.predictions.push(chosen);
+            return chosen;
+         },
+         update: function(reward) {
+            this.rewards.push(reward);
+            var last = this.last();
+            // Randomize for float reward in [0, 1]. Sample reward.
+            var sample = jStat.beta.sample(reward, 1 - reward);
+            if (sample == 1) {
+              successes[last] += 1;
+            } else {
+              failures[last] += 1;
+            }
+         },
+         t: function() { return this.predictions.length; },
+         last: function() {
+            return this.predictions[this.t()-1];
+         },
+         rewards: [],
+         predictions: []
+      }
    }
 };
-

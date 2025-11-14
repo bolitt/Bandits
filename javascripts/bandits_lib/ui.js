@@ -62,6 +62,7 @@ var agentTypes = {
         "Exp3": { constructor: Agent.Exp3, args: [0.1] },
         "Exp3.1": { constructor: Agent.Exp31 },
         "Exp3.S": { constructor: Agent.Exp3S, args: [0.1, 0.002] },
+        "ThompsonSampling": { constructor: Agent.ThompsonSampling },
     },
     defaults: [ 
         [ 'Exp3.1' ]
